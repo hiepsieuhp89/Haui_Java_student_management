@@ -5,13 +5,7 @@
  */
 package com.mycompany.btl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -20,34 +14,72 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Vector;
+
 /**
  *
  * @author tungc
  */
 public class PhongHoc implements Serializable {
-    String url_path;
+    String table = "classrooms";
+    
     ArrayList<PhongHoc> list;
     
+    int id;
     String sophong;
     String tenphong;
     String loaiphong;
     
-    public PhongHoc() throws FileNotFoundException, IOException, ClassNotFoundException{
-        
-        url_path = java.net.URLDecoder.decode(new File(this.getClass().getResource("files/PhongHoc.txt").getPath()).getAbsolutePath());
-        try{
-            FileInputStream fis = new FileInputStream(url_path);     
-            ObjectInputStream ois = new ObjectInputStream(fis); 
-            list = (ArrayList) ois.readObject();   
-            ois.close();
-            
-        }catch(Exception e){
-            
-            list = new ArrayList<PhongHoc>();
-            
-            System.out.println("Khong tim thay phong hoc trong csdl");
-        }
+    public PhongHoc(int _id, String _sophong, String _tenphong, String _loaiphong){
+        id = _id;
+        sophong = _sophong;
+        tenphong = _tenphong;
+        loaiphong = _loaiphong;
     }
+    public PhongHoc(){
+        
+        try{
+            String sql = "select * from " + this.table;
+            
+            //đọc bảng student
+            ResultSet rs = new DB().execute(sql);
+            
+            Vector data = null;
+            
+            // Nếu không có phong nào
+            if (rs.isBeforeFirst() == false) {
+                rs.next();
+                list = new ArrayList<PhongHoc>();            
+                System.out.println("Khong tim thay phong hoc trong csdl");
+            }
+            else{
+                list = new ArrayList<PhongHoc>();  
+                
+                while(rs.next()){
+                    //Lop lop = 
+                    list.add(new PhongHoc(
+                        rs.getInt("id"),
+                        rs.getString("sophong"),
+                        rs.getString("tenphong"),
+                        rs.getString("loaiphong")
+                    ));
+                }
+            }
+            
+        }catch(Exception e){}
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
     public String getSophong() {
         return sophong;
     }
@@ -71,6 +103,14 @@ public class PhongHoc implements Serializable {
     public void setSophong(String sophong) {
         this.sophong = sophong;
     }
+    public PhongHoc findById(int _id) throws IOException, ClassNotFoundException{
+        
+        for(int i = 0; i < list.size();i++){
+            if(list.get(i).getId() == _id)
+                return list.get(i);
+        }
+        return new PhongHoc();
+    }
     public PhongHoc findByRoomNumber(String number) throws IOException, ClassNotFoundException{
         
         for(int i = 0; i < list.size();i++){
@@ -79,45 +119,33 @@ public class PhongHoc implements Serializable {
         }
         return new PhongHoc();
     }
-    public ArrayList<PhongHoc> docdulieu() throws IOException, ClassNotFoundException{
+    public ArrayList<PhongHoc> docdulieu(){
         return list;
     }
-    public void save() throws IOException, ClassNotFoundException{
-        
-        list.add(this);
-        
-        FileOutputStream fos = new FileOutputStream(url_path);
-        
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-       
-        oos.writeObject(list);
+    public boolean save(){
+        try{
+            String sql = "insert into " + this.table + "(`sophong`,`tenphong`,`loaiphong`) values (\""+ this.sophong +"\",\""+ this.tenphong +"\",\""+ this.loaiphong +"\")";         
+            list.add(this);
+            return new DB().update(sql);
             
-        oos.close();
+        }catch(Exception e){}
+        return false;
     }
-    public void update(int index) throws IOException, ClassNotFoundException{
-        
-        list.get(index).sophong = sophong;
-        list.get(index).loaiphong = loaiphong;
-        list.get(index).tenphong = tenphong;
-        
-        FileOutputStream fos = new FileOutputStream(url_path);
-        
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-       
-        oos.writeObject(list);
+    public boolean update(int index){ 
+        try{
+            String sql = "update " + this.table + " set sophong = \"" + this.sophong + "\", tenphong = \"" + this.tenphong +"\", loaiphong = \"" + this.loaiphong +"\"" + " where id = " + index;
+            return new DB().update(sql);
             
-        oos.close();
+        }catch(Exception e){}
+        return false;
     }
-    public void delete(int index) throws IOException, ClassNotFoundException{
-        
-        list.remove(index);
-        
-        FileOutputStream fos = new FileOutputStream(url_path);
-
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-
-        oos.writeObject(list);
+    public boolean delete(int index){
+        try{
             
-        oos.close();
+            String sql = "delete from " + this.table + " where id = " + index;
+            return new DB().update(sql);
+            
+        }catch(Exception e){}
+        return false;
     }
 }

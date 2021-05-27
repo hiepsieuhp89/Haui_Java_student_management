@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package com.mycompany.btl;
+
 import java.awt.Label;
 import java.awt.event.*;  
 import java.awt.*;
@@ -102,6 +103,22 @@ public class ThemFrame extends java.awt.Frame {
         //initComponents();
     }
     private void them_btnActionPerformed(java.awt.event.ActionEvent evt) throws IOException, ClassNotFoundException { 
+        if(model == "Users"){
+            User u = new User();
+            for(int i = 0;i<tf.length;i++){
+                if(tf[i].getName() == "name")
+                    u.setName(tf[i].getText());
+                
+                if(tf[i].getName() == "username")
+                    u.setUsername(tf[i].getText());
+                
+                if(tf[i].getName() == "password")
+                    u.setPassword(tf[i].getText());
+               
+            }
+            u.setRole(choice.getSelectedItem());
+            u.save();
+        }
         if(model == "PhongHoc"){
             PhongHoc ph = new PhongHoc();
             for(int i = 0;i<tf.length;i++){

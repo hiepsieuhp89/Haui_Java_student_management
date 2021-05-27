@@ -4,6 +4,51 @@
   <NonVisualComponents>
     <Menu class="java.awt.MenuBar" name="mhc_menu">
       <SubComponents>
+        <Menu class="java.awt.Menu" name="dangnhap_menu">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Dialog" size="14" style="1"/>
+            </Property>
+            <Property name="label" type="java.lang.String" value="Login"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="java.awt.MenuItem" name="dangxuat">
+              <Properties>
+                <Property name="label" type="java.lang.String" value="menuItem1"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dangxuatActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="java.awt.MenuItem" name="dangnhap">
+              <Properties>
+                <Property name="label" type="java.lang.String" value="menuItem1"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dangnhapActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="java.awt.Menu" name="admin_user_menu">
+          <Properties>
+            <Property name="label" type="java.lang.String" value="Admin Users"/>
+            <Property name="name" type="java.lang.String" value=""/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="admin_user_menuActionPerformed"/>
+          </Events>
+          <SubComponents>
+            <MenuItem class="java.awt.MenuItem" name="user_danhsach_menu">
+              <Properties>
+                <Property name="label" type="java.lang.String" value="List"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="user_danhsach_menuActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
         <Menu class="java.awt.Menu" name="lophoc_menu">
           <Properties>
             <Property name="label" type="java.lang.String" value="Class"/>

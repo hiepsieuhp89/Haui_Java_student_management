@@ -5,16 +5,12 @@
  */
 package com.mycompany.btl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.net.URL;
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  *
@@ -22,34 +18,64 @@ import java.util.ArrayList;
  */
 public class Lop implements Serializable{
     
+    String table = "class";
+    
     String url_path;
     ArrayList<Lop> list;
     
+    int id;
     String name;
     String khoahoc, kyhoc;
     PhongHoc phonghoc;
     
-    public Lop() throws FileNotFoundException, IOException, ClassNotFoundException{
-        
-        phonghoc = new PhongHoc();
-        
-        url_path = java.net.URLDecoder.decode(new File(this.getClass().getResource("files/Lop.txt").getPath()).getAbsolutePath());
-        
-        
-        try{
-            FileInputStream fis = new FileInputStream(url_path);     
-            ObjectInputStream ois = new ObjectInputStream(fis); 
-            list = (ArrayList) ois.readObject();   
-            ois.close();
-            
-        }catch(Exception e){
-            
-            list = new ArrayList<Lop>();
-            
-            System.out.println("Khong tim thay lop hoc trong csdl");
-        }
+    public Lop(int _id, String _name, String _khoahoc, String _kyhoc, PhongHoc _phonghoc){
+        id = _id;
+        name = _name;
+        khoahoc = _khoahoc;
+        kyhoc = _kyhoc;
+        phonghoc = _phonghoc;
     }
-    
+    public Lop(){
+       
+        phonghoc = new PhongHoc();
+        try{
+            String sql = "select * from "+this.table;
+            
+            //đọc bảng student
+            ResultSet rs = new DB().execute(sql);
+            
+            Vector data = null;
+            
+            // Nếu không có lop nào
+            if (rs.isBeforeFirst() == false) {
+                rs.next();
+                list = new ArrayList<Lop>();            
+                System.out.println("Khong tim thay lop trong csdl");
+            }
+            else{
+                list = new ArrayList<Lop>();  
+                
+                while(rs.next()){
+                    //Lop lop = 
+                    list.add(new Lop(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("khoahoc"),
+                        rs.getString("kyhoc"),
+                        new PhongHoc().findById(rs.getInt("phonghocId"))
+                    ));
+                }
+            }
+            
+        }catch(Exception e){}
+    }
+    public int getId() {
+        return id;
+    } 
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public PhongHoc getPhonghoc() {
         return phonghoc;
     }
@@ -84,7 +110,15 @@ public class Lop implements Serializable{
     public ArrayList<Lop> docdulieu() throws IOException, ClassNotFoundException{       
         return list;
     }
-    public Lop findByClassName(String className) throws IOException, ClassNotFoundException{
+    public Lop findById(int _id) throws IOException, ClassNotFoundException{
+        
+        for(int i = 0; i < list.size();i++){
+            if(list.get(i).getId() == _id)
+                return list.get(i);
+        }
+        return new Lop();
+    }
+    public Lop findByClassName(String className){
         
         for(int i = 0; i < list.size();i++){
             if(list.get(i).getName().equals(className))
@@ -92,43 +126,31 @@ public class Lop implements Serializable{
         }
         return new Lop();
     }
-    public void save() throws IOException, ClassNotFoundException{
-        
-        list.add(this);
-        
-        FileOutputStream fos = new FileOutputStream(url_path);
-        
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-       
-        oos.writeObject(list);
+    public boolean save(){
+        try{
+            String sql = "insert into " + this.table + "(`name`,`khoahoc`,`kyhoc`,`phonghocId`) values (\""+ this.name +"\",\""+ this.khoahoc +"\",\""+ this.kyhoc +"\","+ this.getPhonghoc().getId() +")";         
+            list.add(this);
+            return new DB().update(sql);
             
-        oos.close();
+        }catch(Exception e){}
+        return false;
     }
-    public void update(int index) throws IOException, ClassNotFoundException{
-        
-        list.get(index).name = name;
-        list.get(index).khoahoc = khoahoc;
-        list.get(index).kyhoc = kyhoc;
-        list.get(index).phonghoc = phonghoc;
-        
-        FileOutputStream fos = new FileOutputStream(url_path);
-        
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
+    public boolean update(int index){
+        try{
+            String sql = "update " + this.table + " set name = \"" + this.name + "\", khoahoc = \"" + this.khoahoc +"\", kyhoc = \"" + this.kyhoc +"\", phonghocId = " + this.getPhonghoc().getId() + " where id = " + index;
+            return new DB().update(sql);
+            
+        }catch(Exception e){}
+        return false;
        
-        oos.writeObject(list);
-            
-        oos.close();
     }
-    public void delete(int index) throws IOException, ClassNotFoundException{
-        
-        list.remove(index);
-        
-        FileOutputStream fos = new FileOutputStream(url_path);
-
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-
-        oos.writeObject(list);
+    public boolean delete(int index){
+        try{
             
-        oos.close();
+            String sql = "delete from " + this.table + " where id = " + index;
+            return new DB().update(sql);
+            
+        }catch(Exception e){}
+        return false;
     }
 }
