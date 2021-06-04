@@ -54,6 +54,7 @@ public class DangNhapPanel extends java.awt.Panel {
         password = new javax.swing.JTextField();
         submit = new java.awt.Button();
         isremember = new java.awt.Checkbox();
+        validate_msg = new java.awt.Label();
 
         setPreferredSize(new java.awt.Dimension(800, 500));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -91,19 +92,29 @@ public class DangNhapPanel extends java.awt.Panel {
 
         isremember.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         isremember.setLabel("Remember me!");
-        add(isremember, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 280, -1, 30));
+        add(isremember, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 290, -1, 30));
+
+        validate_msg.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        validate_msg.setForeground(new java.awt.Color(255, 0, 0));
+        validate_msg.setName(""); // NOI18N
+        add(validate_msg, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 260, 390, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void submitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitActionPerformed
         // TODO add your handling code here:
-        parent.user.setUsername(username.getText());
-        parent.user.setPassword(password.getText());
-        
-        if(parent.user.Validate()){
-            parent.submit_dangNhap();
-            this.setVisible(false);
-        }
+        if(username.getText().trim().equals("") || password.getText().trim().equals(""))
+            this.validate_msg.setText("Moi nhap day du Username va Password");      
         else{
+            parent.user.setUsername(username.getText());
+            parent.user.setPassword(password.getText());
+
+            if(parent.user.Validate()){
+                parent.submit_dangNhap();
+                this.setVisible(false);
+            }
+            else{
+                this.validate_msg.setText("Sai mat khau hoac tai khoan khong co trong he thong");
+            }
         }
     }//GEN-LAST:event_submitActionPerformed
 
@@ -116,5 +127,6 @@ public class DangNhapPanel extends java.awt.Panel {
     private javax.swing.JTextField password;
     private java.awt.Button submit;
     private javax.swing.JTextField username;
+    private java.awt.Label validate_msg;
     // End of variables declaration//GEN-END:variables
 }
